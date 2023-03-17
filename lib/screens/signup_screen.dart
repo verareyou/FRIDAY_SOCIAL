@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:socialapp/resources/auth_methods.dart';
+import 'package:socialapp/responsive/mobile_screen.dart';
+import 'package:socialapp/responsive/web_screen.dart';
 import 'package:socialapp/screens/login_screen.dart';
 import 'package:socialapp/utils/colors.dart';
 import 'package:socialapp/utils/utils.dart';
 
+import '../responsive/responsive_screen.dart';
 import '../widgets/text_field_input.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -32,10 +35,44 @@ class _LoginScreenState extends State<SignupScreen> {
     _passwordController.dispose();
   }
 
-  
+  void signUpUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    String res = await AuthMethods().signUpUser(
+      email: _emailController.text,
+      password: _passwordController.text,
+      bio: _bioController.text,
+      username: _usernameController.text,
+      file: _image!,
+    );
+
+    if(res == 'success'){
+      setState(() {
+        _isLoading = false;
+      });
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder:(context) => const ResponsiveLayout(
+            mobileScreenLayout: MobileScreenLayout(),
+            webScreenLayout: WebScreenLayout(),
+          ) 
+        ),
+      );
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   seleteImage() async {
-    // Uint8List im = await pickImage ;
+    Uint8List im = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = im;
+    });
   }
 
   @override
@@ -89,16 +126,18 @@ class _LoginScreenState extends State<SignupScreen> {
 
               Stack(
                 children: [
-                  _image!=null ? CircleAvatar(
-                    radius: 64,
-                    backgroundImage: MemoryImage(_image!),
-                    backgroundColor: Colors.white,
-                  ) : const CircleAvatar(
-                    radius: 64,
-                    backgroundImage:
-                        NetworkImage('https://i.stack.imgur.com/l60Hf.png'),
-                    backgroundColor: Colors.white,
-                  ),
+                  _image != null
+                      ? CircleAvatar(
+                          radius: 64,
+                          backgroundImage: MemoryImage(_image!),
+                          backgroundColor: Colors.white,
+                        )
+                      : const CircleAvatar(
+                          radius: 64,
+                          backgroundImage: NetworkImage(
+                              'https://i.stack.imgur.com/l60Hf.png'),
+                          backgroundColor: Colors.white,
+                        ),
                   Positioned(
                     bottom: -14,
                     right: 5,
@@ -125,6 +164,7 @@ class _LoginScreenState extends State<SignupScreen> {
 
               TextFieldInput(
                 paddi: 16,
+                bord: 10,
                 hintText: "Username",
                 textEditingController: _usernameController,
                 textInputType: TextInputType.text,
@@ -138,6 +178,7 @@ class _LoginScreenState extends State<SignupScreen> {
 
               TextFieldInput(
                 paddi: 16,
+                bord: 10,
                 hintText: "Enter your email",
                 textEditingController: _emailController,
                 textInputType: TextInputType.emailAddress,
@@ -151,6 +192,7 @@ class _LoginScreenState extends State<SignupScreen> {
 
               TextFieldInput(
                 paddi: 16,
+                bord: 10,
                 hintText: "Enter your password",
                 textEditingController: _passwordController,
                 textInputType: TextInputType.text,
@@ -165,6 +207,7 @@ class _LoginScreenState extends State<SignupScreen> {
 
               TextFieldInput(
                 paddi: 16,
+                bord: 10,
                 hintText: "Enter your bio",
                 textEditingController: _bioController,
                 textInputType: TextInputType.multiline,
@@ -203,22 +246,28 @@ class _LoginScreenState extends State<SignupScreen> {
                 ],
               ),
               InkWell(
-                child: Container(
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  // margin: EdgeInsets.only(bottom: 20),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: const ShapeDecoration(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                  child: Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    // margin: EdgeInsets.only(bottom: 20),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: const ShapeDecoration(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      color: primaryColor,
                     ),
-                    color: primaryColor,
+                    child: const Text("Sign up"),
                   ),
-                  child: const Text("Sign up"),
-                ),
-                onTap: () async {String res = await AuthMethods().signUpUser(email: _emailController.text, password: _passwordController.text, bio: _bioController.text, username: _usernameController.text, file: _image!);
-                print(res);}
-              ),
+                  onTap: () async {
+                    String res = await AuthMethods().signUpUser(
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                        bio: _bioController.text,
+                        username: _usernameController.text,
+                        file: _image!);
+                    print(res);
+                  }),
               Flexible(
                 child: Container(),
                 flex: 1,
