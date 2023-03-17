@@ -24,7 +24,7 @@ class TextFieldInput extends StatelessWidget {
     final inputBorder =
         OutlineInputBorder(borderSide: Divider.createBorderSide(context));
     return TextField(
-      style: TextStyle(
+      style: const TextStyle(
         color: mainTextColor
       ),
       controller: textEditingController,

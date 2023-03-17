@@ -5,13 +5,22 @@ import "package:image_picker/image_picker.dart";
 const webScreenSize = 600;
 
 // image
-pickImage(ImageSource source) async {
+pickImage(ImageSource source, {required bool isPost}) async {
   final ImagePicker _imagePicker = ImagePicker();
 
-  XFile? _file = await _imagePicker.pickImage(source: source);
+  XFile? _file = await _imagePicker.pickImage(
+      source: source, imageQuality: isPost ? 75 : 40);
 
-  if(_file != null) {
+  if (_file != null) {
     return _file.readAsBytes();
   }
   print("No image selected");
+}
+
+showSnackBar(String content, BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(content),
+    ),
+  );
 }
