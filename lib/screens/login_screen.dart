@@ -85,6 +85,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 hintText: "Enter your email",
                 textEditingController: _emailController,
                 textInputType: TextInputType.emailAddress,
+                bord: 10,
+
               ),
               const SizedBox(
                 height: 14,
@@ -93,6 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 hintText: "Enter your password",
                 textEditingController: _passwordController,
                 textInputType: TextInputType.text,
+                bord: 10,
                 isPass: true,
               ),
               Flexible(
@@ -135,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 22),
                   decoration: const ShapeDecoration(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
                     color: primaryColor,
                   ),
