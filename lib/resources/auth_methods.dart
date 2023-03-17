@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:socialapp/resources/storage_methods.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -29,6 +30,9 @@ class AuthMethods {
             email: email, password: password);
 
         print(cred.user!.uid);
+        
+        String photoUrl = await StorageMethods().uploadImageToStorage('profilePics', file, false);
+
         // save user to store
         await _firestore.collection('users').doc(cred.user!.uid).set({
           'username': username,
@@ -37,6 +41,7 @@ class AuthMethods {
           'bio': bio,
           'followers': [],
           'following': [],
+          'photoUrl': photoUrl,
         });
 
         //
@@ -53,8 +58,14 @@ class AuthMethods {
       } else {
         res = 'no inputs';
       }
-    } catch (err) {
-      res = err.toString();
+    } on FirebaseAuthException catch(err){
+      // if(err.code == "invalid-email") return "The email is invalid.";
+      res = err.code;
+      // if(err.code == "email-already-in-use") return "The email address is already in use by another account.";
+      // if(err.code == "weak-password") return "Password should be at least 6 characters.";
+    }
+     catch (err) {
+      res = "ERR" + err.toString();
     }
     return res;
   }
