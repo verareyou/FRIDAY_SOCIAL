@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,7 +8,6 @@ import 'package:socialapp/responsive/web_screen.dart';
 import 'package:socialapp/screens/login_screen.dart';
 import 'package:socialapp/utils/colors.dart';
 import 'package:socialapp/utils/utils.dart';
-
 import '../responsive/responsive_screen.dart';
 import '../widgets/text_field_input.dart';
 
@@ -17,10 +15,10 @@ class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _LoginScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<SignupScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -42,12 +40,13 @@ class _LoginScreenState extends State<SignupScreen> {
       _isLoading = true;
     });
 
+    // String res = "plss";
     String res = await AuthMethods().signUpUser(
       email: _emailController.text,
       password: _passwordController.text,
       bio: _bioController.text,
       username: _usernameController.text,
-      file: _image!,
+      file: _image,
     );
 
     setState(() {
@@ -61,6 +60,7 @@ class _LoginScreenState extends State<SignupScreen> {
         case "weak-password":
           _warn = "Password should be at least 6 characters.";
           break;
+        default:break;
       }
     });
 
@@ -81,7 +81,7 @@ class _LoginScreenState extends State<SignupScreen> {
       setState(() {
         _isLoading = false;
       });
-      showSnackBar(res,context);
+    showSnackBar(res, context);
     }
   }
 
@@ -89,12 +89,6 @@ class _LoginScreenState extends State<SignupScreen> {
     Uint8List im = await pickImage(ImageSource.gallery, isPost: false);
     setState(() {
       _image = im;
-    });
-  }
-
-  setLoading() {
-    setState(() {
-      _isLoading = !_isLoading;
     });
   }
 

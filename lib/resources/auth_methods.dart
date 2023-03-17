@@ -16,22 +16,22 @@ class AuthMethods {
     required String password,
     required String bio,
     required String username,
-    required Uint8List file,
+    required Uint8List? file,
   }) async {
     String res = "some error ocurred";
+        print("hello");
     try {
       if (email.isNotEmpty ||
           password.isNotEmpty ||
           bio.isNotEmpty ||
-          username.isNotEmpty ||
-          file != null) {
+          username.isNotEmpty) {
         // register
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
 
-        print(cred.user!.uid);
-        
-        String photoUrl = await StorageMethods().uploadImageToStorage('profilePics', file, false);
+
+        String photoUrl = await StorageMethods()
+            .uploadImageToStorage('profilePics', file!, false);
 
         // save user to store
         await _firestore.collection('users').doc(cred.user!.uid).set({
@@ -56,16 +56,34 @@ class AuthMethods {
 
         res = 'success';
       } else {
-        res = 'no inputs';
+        res = 'Please enter all the fields';
       }
-    } on FirebaseAuthException catch(err){
+    } on FirebaseAuthException catch (err) {
       // if(err.code == "invalid-email") return "The email is invalid.";
       res = err.code;
       // if(err.code == "email-already-in-use") return "The email address is already in use by another account.";
       // if(err.code == "weak-password") return "Password should be at least 6 characters.";
+    } catch (err) {
+      res = err.toString();
     }
-     catch (err) {
-      res = "ERR" + err.toString();
+    return res;
+  }
+
+  Future<String> loginUser({
+    required String email,
+    required String password,
+  }) async {
+    String res = 'Some error occured';
+    try {
+      if(email.isNotEmpty || password.isNotEmpty) {
+        await _auth.signInWithEmailAndPassword(email: email, password: password);
+        res = 'success';
+      } else {
+        res = 'enter all the fields.';
+      }
+      
+    } catch (err) {
+      res = err.toString();
     }
     return res;
   }
