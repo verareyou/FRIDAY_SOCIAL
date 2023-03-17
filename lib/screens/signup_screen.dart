@@ -25,6 +25,7 @@ class _LoginScreenState extends State<SignupScreen> {
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
+  String _warn = '';
   bool _isLoading = false;
   Uint8List? _image;
 
@@ -33,6 +34,7 @@ class _LoginScreenState extends State<SignupScreen> {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _usernameController.dispose();
   }
 
   void signUpUser() async {
@@ -48,30 +50,51 @@ class _LoginScreenState extends State<SignupScreen> {
       file: _image!,
     );
 
-    if(res == 'success'){
+    setState(() {
+      switch (res) {
+        case "invalid-email":
+          _warn = "The email is invalid.";
+          break;
+        case "email-already-in-use":
+          _warn = "The email address is already in use by another account.";
+          break;
+        case "weak-password":
+          _warn = "Password should be at least 6 characters.";
+          break;
+      }
+    });
+
+    if (res == 'success') {
       setState(() {
         _isLoading = false;
       });
-
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder:(context) => const ResponsiveLayout(
+          builder: (context) => const ResponsiveLayout(
             mobileScreenLayout: MobileScreenLayout(),
             webScreenLayout: WebScreenLayout(),
-          ) 
+          ),
         ),
       );
     } else {
       setState(() {
         _isLoading = false;
       });
+      showSnackBar(res,context);
     }
   }
 
   seleteImage() async {
-    Uint8List im = await pickImage(ImageSource.gallery);
+    Uint8List im = await pickImage(ImageSource.gallery, isPost: false);
     setState(() {
       _image = im;
+    });
+  }
+
+  setLoading() {
+    setState(() {
+      _isLoading = !_isLoading;
     });
   }
 
@@ -88,6 +111,7 @@ class _LoginScreenState extends State<SignupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
               Flexible(
                 child: Container(),
@@ -143,7 +167,7 @@ class _LoginScreenState extends State<SignupScreen> {
                     right: 5,
                     child: IconButton(
                       onPressed: seleteImage,
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.add_a_photo,
                         color: Colors.white,
                         shadows: [
@@ -156,8 +180,8 @@ class _LoginScreenState extends State<SignupScreen> {
               ),
 
               Flexible(
-                child: Container(),
                 flex: 1,
+                child: Container(),
               ),
 
               // USERNAME
@@ -213,6 +237,17 @@ class _LoginScreenState extends State<SignupScreen> {
                 textInputType: TextInputType.multiline,
               ),
 
+              Container(
+                  padding: EdgeInsets.symmetric(vertical: _warn != '' ? 8 : 0),
+                  child: _warn != ''
+                      ? Text(
+                          _warn,
+                          style: TextStyle(
+                            color: lightTextColor,
+                          ),
+                        )
+                      : const SizedBox()),
+
               Flexible(
                 flex: 3,
                 child: Container(),
@@ -246,31 +281,28 @@ class _LoginScreenState extends State<SignupScreen> {
                 ],
               ),
               InkWell(
-                  child: Container(
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    // margin: EdgeInsets.only(bottom: 20),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: const ShapeDecoration(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      color: primaryColor,
+                onTap: () => {signUpUser()},
+                child: Container(
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  // margin: EdgeInsets.only(bottom: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: const ShapeDecoration(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    child: const Text("Sign up"),
+                    color: primaryColor,
                   ),
-                  onTap: () async {
-                    String res = await AuthMethods().signUpUser(
-                        email: _emailController.text,
-                        password: _passwordController.text,
-                        bio: _bioController.text,
-                        username: _usernameController.text,
-                        file: _image!);
-                    print(res);
-                  }),
+                  child: !_isLoading
+                      ? const Text("Sign up")
+                      : const CircularProgressIndicator(
+                          color: Colors.black,
+                        ),
+                ),
+              ),
               Flexible(
-                child: Container(),
                 flex: 1,
+                child: Container(),
               )
             ],
           ),
