@@ -5,6 +5,7 @@ class TextFieldInput extends StatelessWidget {
   final TextEditingController textEditingController;
   final bool isPass;
   final double paddi;
+  final double bord;
   final String hintText;
   final TextInputType textInputType;
 
@@ -15,6 +16,7 @@ class TextFieldInput extends StatelessWidget {
     required this.textEditingController,
     required this.textInputType,
     this.paddi = 22,
+    this.bord = 20,
   });
 
   @override
@@ -33,12 +35,12 @@ class TextFieldInput extends StatelessWidget {
         ),
         fillColor: Color.fromARGB(0, 198, 198, 198),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(bord),
           borderSide:
               const BorderSide(color: lightTextColor, style: BorderStyle.solid),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(bord),
           borderSide:
               const BorderSide(color: lightTextColor, style: BorderStyle.solid),
         ),
