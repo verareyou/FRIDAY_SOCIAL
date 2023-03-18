@@ -54,13 +54,17 @@ class _SignupScreenState extends State<SignupScreen> {
         case "invalid-email":
           _warn = "The email is invalid.";
           break;
+        case "no_input":
+          _warn = "Fill all the Fields.";
+          break;
         case "email-already-in-use":
           _warn = "The email address is already in use by another account.";
           break;
         case "weak-password":
           _warn = "Password should be at least 6 characters.";
           break;
-        default:break;
+        default:
+          break;
       }
     });
 
@@ -69,19 +73,31 @@ class _SignupScreenState extends State<SignupScreen> {
         _isLoading = false;
       });
       // ignore: use_build_context_synchronously
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const ResponsiveLayout(
+      // Navigator.of(context).pushReplacement(
+      //   MaterialPageRoute(
+      //     builder: (context) => const ResponsiveLayout(
+      //       mobileScreenLayout: MobileScreenLayout(),
+      //       webScreenLayout: WebScreenLayout(),
+      //     ),
+      //   ),
+      // );
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => ResponsiveLayout(
             mobileScreenLayout: MobileScreenLayout(),
             webScreenLayout: WebScreenLayout(),
           ),
+          transitionDuration: Duration(milliseconds: 350),
+          transitionsBuilder: (_, a, __, c) =>
+              FadeTransition(opacity: a, child: c),
         ),
       );
     } else {
       setState(() {
         _isLoading = false;
       });
-    showSnackBar(res, context);
+      // showSnackBar(res, context);
     }
   }
 
@@ -232,15 +248,18 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
 
               Container(
-                  padding: EdgeInsets.symmetric(vertical: _warn != '' ? 8 : 0),
-                  child: _warn != ''
-                      ? Text(
-                          _warn,
-                          style: TextStyle(
-                            color: lightTextColor,
-                          ),
-                        )
-                      : const SizedBox()),
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: _warn != ''
+                    ? Text(
+                        _warn,
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 181, 104, 104),
+                        ),
+                      )
+                    : const SizedBox(
+                        height: 14,
+                      ),
+              ),
 
               Flexible(
                 flex: 3,
@@ -257,9 +276,13 @@ class _SignupScreenState extends State<SignupScreen> {
                     // padding: EdgeInsets.symmetric(vertical: 8),
                   ),
                   GestureDetector(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => LoginScreen(),
+                    onTap: () => Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (_, __, ___) => LoginScreen(),
+                        transitionDuration: Duration(milliseconds: 350),
+                        transitionsBuilder: (_, a, __, c) =>
+                            FadeTransition(opacity: a, child: c),
                       ),
                     ),
                     child: Container(
