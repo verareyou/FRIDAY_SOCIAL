@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:socialapp/resources/auth_methods.dart';
+import 'package:socialapp/responsive/mobile_screen.dart';
+import 'package:socialapp/responsive/responsive_screen.dart';
+import 'package:socialapp/responsive/web_screen.dart';
 import 'package:socialapp/screens/signup_screen.dart';
 import 'package:socialapp/utils/colors.dart';
 import 'package:socialapp/utils/utils.dart';
@@ -18,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+  String _warn = '';
 
   @override
   void dispose() {
@@ -33,9 +37,42 @@ class _LoginScreenState extends State<LoginScreen> {
     String res = await AuthMethods().loginUser(
         email: _emailController.text, password: _passwordController.text);
 
+    setState(() {
+      switch (res) {
+        case "user-not-found":
+          _warn = "User not found.";
+          break;
+        case "invalid-email":
+          _warn = "Invalid Email.";
+          break;
+        case "no_input":
+          _warn = "Fill all the Fields.";
+          break;
+        case "wrong-password":
+          _warn = "You entered wrong password.";
+          break;
+        default:
+          break;
+      }
+    });
+
+    print(res);
+
     if (res == 'success') {
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => ResponsiveLayout(
+            mobileScreenLayout: MobileScreenLayout(),
+            webScreenLayout: WebScreenLayout(),
+          ),
+          transitionDuration: Duration(milliseconds: 350),
+          transitionsBuilder: (_, a, __, c) =>
+              FadeTransition(opacity: a, child: c),
+        ),
+      );
     } else {
-      showSnackBar(res, context);
+      // showSnackBar(_warn, context);
     }
     setState(() {
       _isLoading = false;
@@ -79,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: GoogleFonts.montserrat(
                       fontSize: 28,
                       fontWeight: FontWeight.w500,
-                      color: mainTextColor,
+                      color: lightTextColor,
                     ),
                   ),
                   const SizedBox(
@@ -90,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: GoogleFonts.montserrat(
                       fontSize: 28,
                       fontWeight: FontWeight.w500,
-                      color: mainTextColor,
+                      color: lightTextColor,
                     ),
                   ),
                 ],
@@ -115,6 +152,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 bord: 10,
                 isPass: true,
               ),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: _warn != ''
+                    ? Text(
+                        _warn,
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 181, 104, 104),
+                        ),
+                      )
+                    : const SizedBox(
+                        height: 14,
+                      ),
+              ),
               Flexible(
                 flex: 3,
                 child: Container(),
@@ -130,9 +180,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     // padding: EdgeInsets.symmetric(vertical: 8),
                   ),
                   GestureDetector(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => SignupScreen(),
+                    onTap: () => Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (_, __, ___) => SignupScreen(),
+                        transitionDuration: Duration(milliseconds: 350),
+                        transitionsBuilder: (_, a, __, c) =>
+                            FadeTransition(opacity: a, child: c),
                       ),
                     ),
                     child: Container(
