@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:socialapp/utils/colors.dart';
+import 'package:socialapp/utils/globle_variable.dart';
 
 class MobileScreenLayout extends StatefulWidget {
   const MobileScreenLayout({super.key});
@@ -40,11 +41,13 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
-        // children: homeSre,
+         children: homeScreenItems,
+        controller: pageController,
+        onPageChanged: onPageChanged,
       ),
       bottomNavigationBar: CupertinoTabBar(
         backgroundColor: mobileBackgroundColor,
-        items: <BottomNavigationBarItem>[
+        items: [
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.home,
@@ -55,7 +58,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.search,
-                color: (_page == 1) ? primaryColor : secondaryColor,
+                color: (_page == 1) ? primaryColor : secondaryColor, 
               ),
               label: '',
               backgroundColor: primaryColor),
@@ -81,6 +84,8 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
               label: '',
               backgroundColor: primaryColor),
         ],
+        onTap: navigationTapped,
+        currentIndex: _page,
       ),
     );
   }
